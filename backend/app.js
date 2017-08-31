@@ -1,36 +1,22 @@
+/*
+ * Dylan Lettinga
+ * 08/29/2017
+ */
 var fs = require("fs");
 var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
-var mongoose = require('mongodb'), Schema = mongoose.Schema;
+var Client = require('mongodb').MongoClient;
 
+var conn = "mongodb://localhost:27017/tattooformmgr";
 
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 var app = express();
-
-const { Pool, Client } = require('pg')
-
-const pool = new Pool({
-    user: 'appusr',
-    host: '104.236.27.22',
-    database: 'tattooformmgr',
-    password: 'tatgetdopeshit',
-    port: 5432,
-})
   
 /*pool.query('SELECT * FROM formmgr."Invoice"', (err, res) => {
     console.log(err, res)
     pool.end()
 })*/
-
-const client = new Client({
-    user: 'appusr',
-    host: '104.236.27.22',
-    database: 'tattooformmgr',
-    password: 'tatgetdopeshit',
-    port: 5432,
-})
-client.connect()
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -59,7 +45,13 @@ app.post('/post/invoice', urlencodedParser, function (req, res) {
 })
 
 var server = app.listen(4067, function () {
-   var host = server.address().address
-   var port = server.address().port
-   console.log("Server started at http://%s:%s", host, port)
+    var host = server.address().address
+    var port = server.address().port
+    console.log("Server started at http://%s:%s", host, port)
+
+    Client.connect(conn, function(err, db) {
+        if (err) throw err;
+        console.log("Database created/connected");
+        db.close();
+    });
 })
