@@ -2,7 +2,7 @@
  * Dylan Lettinga
  * 08/29/2017
  */
-const mongo = require('./DBops');
+const mongo = require('./dbops');
 var fs = require("fs");
 var express = require('express');
 var path = require('path');

@@ -1,5 +1,5 @@
 var Client = require('mongodb').MongoClient;
-var conn = "mongodb://localhost:27017/tattooformmgr";
+var conn = "mongodb://104.236.27.22:27017/tattooformmgr";
 
 module.exports = {
     /* create collection (table) */
