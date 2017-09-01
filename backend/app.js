@@ -13,9 +13,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/get/search/:lookup', function (req, res) {
-    var res_obj = { "invoices" : [] };
     console.log("[200] " + req.method + " to " + req.url);
-    res.end(mongo.query("invoice", {}));
+    
+    mongo.query("invoice", res, {'phone_number': req.params.lookup});
 })
 
 app.post('/post/login', function (req, res) {
