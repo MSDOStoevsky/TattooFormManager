@@ -3,42 +3,70 @@
  * 08/29/2017
  */
 const mongo = require('./dbops');
+const val = require('./validate');
+var url = require('url');
 var fs = require("fs");
 var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
+//var phantom = require('phantom');
 
 var app = express();
+
+var jsonParser = bodyParser.json()
+
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '../frontend')));
 
-app.get('/get/search/pn/:lookup', function (req, res) {
+app.get('/api/search/', function (req, res) {
     console.log("[200] " + req.method + " to " + req.url);
-    mongo.query("invoice", res, {'phone_number': req.params.lookup });
+    mongo.query("invoice", res, {});
 })
 
-app.get('/get/search/dte/:lookup', function (req, res) {
-    console.log("[200] " + req.method + " to " + req.url);
-    mongo.query("invoice", res, {'date': req.params.lookup });
-})
-
-app.get('/get/search/nme/:first/:last', function (req, res) {
+app.get('/api/search/:lookup', function (req, res) {
     console.log("[200] " + req.method + " to " + req.url);
     mongo.query("invoice", res, 
-    {$or:[{'first_name': req.params.first}, {'last_name': req.params.last }]});
+    {
+        $or:[
+            {'first_name': new RegExp(req.params.lookup+'.*', 'gi')}, 
+            {'last_name': new RegExp(req.params.lookup+'.*', 'gi')},
+            {'full_name': new RegExp(req.params.lookup+'.*', 'gi')},
+            {'phone_number': new RegExp(req.params.lookup+'.*', 'gi')},
+            {'date': new RegExp(req.params.lookup+'.*', 'gi')}
+            
+        ]
+    });
 })
-//new RegExp('/'+req.params.first+'\.*/gi') 
 
-app.post('/post/login', function (req, res) {
-	console.log("[200] " + req.method + " to " + req.url);
-})
-
-app.post('/post/invoice', function (req, res) {
+app.get('/api/pdf/', function (req, res) {
     console.log("[200] " + req.method + " to " + req.url);
-    console.log(req);
-    mongo.insertdoc("invoice", req.body);
-    var status = { "status": "success", "object": req.body}
-    res.end('{"status":"success"}')
+    res.end('test.pdf');
+})
+
+app.delete('/api/invoice', jsonParser, function (req, res) {
+    if (!req.body) return res.sendStatus(400);
+    console.log("[200] " + req.method + " to " + req.url);
+
+    if (val.is_valid(req.body))
+        mongo.deletedoc("invoice", req.body);
+    else
+        res.sendStatus(400);
+
+    var status = { "status": "[200]", "object": req.body};
+    res.end(JSON.stringify(status));
+})
+
+app.post('/api/invoice', jsonParser, function (req, res) {
+    if (!req.body) return res.sendStatus(400);
+    console.log("[200] " + req.method + " to " + req.url);
+
+    if (val.is_valid(req.body))
+        mongo.insertdoc("invoice", req.body);
+    else
+        res.sendStatus(400);
+    
+    var status = { "status": "[200]", "object": req.body};
+    res.end(JSON.stringify(status));
 })
 
 var server = app.listen(4067, function () {
