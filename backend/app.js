@@ -12,11 +12,22 @@ var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/get/search/:lookup', function (req, res) {
+app.get('/get/search/pn/:lookup', function (req, res) {
     console.log("[200] " + req.method + " to " + req.url);
-    
-    mongo.query("invoice", res, {'phone_number': req.params.lookup});
+    mongo.query("invoice", res, {'phone_number': req.params.lookup });
 })
+
+app.get('/get/search/dte/:lookup', function (req, res) {
+    console.log("[200] " + req.method + " to " + req.url);
+    mongo.query("invoice", res, {'date': req.params.lookup });
+})
+
+app.get('/get/search/nme/:first/:last', function (req, res) {
+    console.log("[200] " + req.method + " to " + req.url);
+    mongo.query("invoice", res, 
+    {$or:[{'first_name': req.params.first}, {'last_name': req.params.last }]});
+})
+//new RegExp('/'+req.params.first+'\.*/gi') 
 
 app.post('/post/login', function (req, res) {
 	console.log("[200] " + req.method + " to " + req.url);
