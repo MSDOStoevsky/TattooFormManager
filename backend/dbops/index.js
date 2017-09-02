@@ -52,7 +52,7 @@ module.exports = {
         var queryResult;
         Client.connect(conn, function(err, db) {
             if (err) throw err;
-            db.collection(name).find(obj).toArray(function(err, result) {
+            db.collection(name).find(obj).sort({date: -1}).toArray(function(err, result) {
                 if (err) throw err;
                 response.json(result);
                 db.close();

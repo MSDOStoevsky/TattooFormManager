@@ -27,13 +27,15 @@ app.get('/api/search/:lookup', function (req, res) {
     console.log("[200] " + req.method + " to " + req.url);
     mongo.query("invoice", res, 
     {
-        $or:[
-            {'first_name': new RegExp(req.params.lookup+'.*', 'gi')}, 
-            {'last_name': new RegExp(req.params.lookup+'.*', 'gi')},
-            {'full_name': new RegExp(req.params.lookup+'.*', 'gi')},
-            {'phone_number': new RegExp(req.params.lookup+'.*', 'gi')},
-            {'date': new RegExp(req.params.lookup+'.*', 'gi')}
-            
+        $and: [
+            {'UID': "90DRASN1"},
+            {$or:[
+                {'first_name': new RegExp(req.params.lookup+'.*', 'gi')}, 
+                {'last_name': new RegExp(req.params.lookup+'.*', 'gi')},
+                {'full_name': new RegExp(req.params.lookup+'.*', 'gi')},
+                {'phone_number': new RegExp(req.params.lookup+'.*', 'gi')},
+                {'date': new RegExp(req.params.lookup+'.*', 'gi')}
+            ]}
         ]
     });
 })
@@ -73,5 +75,5 @@ var server = app.listen(4067, function () {
     var host = server.address().address
     var port = server.address().port
     console.log("Server started at http://%s:%s", host, port);
-    mongo.createcol("invoice");
+    //mongo.createcol("invoice");
 })
