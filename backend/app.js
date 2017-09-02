@@ -18,17 +18,17 @@ var jsonParser = bodyParser.json()
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, '../frontend')));
 
-app.get('/api/search/', function (req, res) {
+app.get('/api/search/:uid', function (req, res) {
     console.log("[200] " + req.method + " to " + req.url);
-    mongo.query("invoice", res, {});
+    mongo.query("invoice", res, {'UID': req.params.uid});
 })
 
-app.get('/api/search/:lookup', function (req, res) {
+app.get('/api/search/:uid/:lookup', function (req, res) {
     console.log("[200] " + req.method + " to " + req.url);
     mongo.query("invoice", res, 
     {
         $and: [
-            {'UID': "90DRASN1"},
+            {'UID': req.params.uid},
             {$or:[
                 {'first_name': new RegExp(req.params.lookup+'.*', 'gi')}, 
                 {'last_name': new RegExp(req.params.lookup+'.*', 'gi')},
