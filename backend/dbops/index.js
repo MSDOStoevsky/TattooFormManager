@@ -1,5 +1,5 @@
 var Client = require('mongodb').MongoClient;
-var conn = "mongodb://'+process.env.USER_IP+':27017/tattooformmgr";
+var conn = "mongodb://"+process.env.USER_IP+":27017/tattooformmgr";
 
 module.exports = {
     /* create collection (table) */
