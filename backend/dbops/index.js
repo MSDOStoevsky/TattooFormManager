@@ -47,6 +47,17 @@ module.exports = {
             });
         });
     },
+
+    update: (name, query, obj) => {
+        Client.connect(conn, function(err, db) {
+            if (err) throw err;
+            db.collection(name).updateOne(query, obj, function(err, res) {
+                if (err) throw err;
+                console.log("document updated");
+                db.close();
+            });
+        });
+    },
     /* query database */
     query: (name, obj, res) => {
         if(Object.keys(obj).length === 0 && obj.constructor === Object)

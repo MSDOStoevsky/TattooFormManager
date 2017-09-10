@@ -1,4 +1,4 @@
-var uuid = require('node-uuid');
+var bcrypt = require('bcrypt-nodejs');
 
 function S4(){
     return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
@@ -9,7 +9,12 @@ function token_gen() {
 }
 
 module.exports = {
-    authorize: (basic, db, res) => {
+
+    token_gen : () => {
+        return (S4()+S4()+S4()+S4()+S4()+S4());
+    },
+
+    login: (basic, db, res) => {
         var auth_arr;
         var un_pw;
 
@@ -30,15 +35,71 @@ module.exports = {
                 if(ret.length === 0)
                     res(403, null);
 
-                /* correct match */
-                else if(un_pw[1] === ret[0].pw )
-                    res (null, token_gen());
-
-                /* incorrect password */
-                else res (403, null);
+                /* correct match on un */
+                else
+                {
+                    bcrypt.compare(un_pw[1], ret[0].pw, function(err, issame){
+                        if (err) throw err;
+                        /* password matches */
+                        else if (issame)
+                        { 
+                            /* store generated access token in db and send to client */
+                            var access_token = token_gen();
+                            db.update("user"
+                                , {"user_id": ret[0].user_id}
+                                , { $set: {"token" : access_token, "last_login" : new Date() } }
+                            )
+                            res (null, access_token);
+                        }
+                        /* no password match */
+                        else
+                            res (403, null);
+                    });
+                
+                }
             });
         }
         else res(400, null);
-    }
+    },
 
+    authorize: (bearer, user, db, res) => {
+        var bearer_arr;
+        var btoken;
+
+        try
+        {
+            bearer_arr = bearer.split(" ");
+        }
+        catch(err)
+        {
+            res(400, null);
+        }
+
+        if(bearer_arr[0] === "Bearer")
+        {
+            btoken = bearer_arr[1];
+            db.query("user", {'user_id': user}, function(ret){
+
+                /* no user with that user_id */
+                if(ret.length === 0)
+                    res(400, null);
+
+                /* correct match on user_id */
+                else
+                {
+                    if( ret[0].token == btoken) res(null, true);
+                    else res (403, false);
+                
+                }
+            });
+        }
+        else res(400, null);
+    },
+
+    secure : (pw, callback) => {
+        bcrypt.hash(pw, null, null, function(hasherr, hash){
+            if(hasherr) throw hasherr;
+            callback(hash);
+        })
+    }
 }
