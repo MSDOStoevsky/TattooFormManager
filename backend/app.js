@@ -123,7 +123,6 @@ app.post('/api/user', jsonParser, function (req, res) {
         });
         res.end(JSON.stringify({ "STATUS": "success"}))
     }
-    
 })
 
 app.post('/auth/login', jsonParser, function (req, res) {
