@@ -7,9 +7,9 @@ node app.js
 
 ## Endpoints
 
-* POST > /auth/login/
+* POST /auth/login/
 
-* POST > /api/user/
-* POST > /api/invoice/
-* GET > /api/search/:userid/
-* GET > /api/search/:userid/:lookup/
+* POST /api/user/
+* POST /api/invoice/
+* GET /api/search/:userid/
+* GET /api/search/:userid/:lookup/
