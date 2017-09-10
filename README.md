@@ -9,6 +9,7 @@ node app.js
 
 *Header MUST include bearer token
 * *POST /auth/login/
+
 Body:
 ```JSON
 {
@@ -16,6 +17,7 @@ Body:
 }
 ```
 * *POST /api/user/
+
 Body:
 ```JSON
 {
@@ -24,6 +26,7 @@ Body:
 }
 ```
 * *POST /api/invoice/
+
 Body:
 ```JSON
 {
