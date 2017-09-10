@@ -1,5 +1,5 @@
 var Client = require('mongodb').MongoClient;
-var conn = "mongodb://104.236.27.22:27017/tattooformmgr";
+var conn = "mongodb://"+process.env.USER_IP+":27017/tattooformmgr";
 
 module.exports = {
     /* create collection (table) */
@@ -48,15 +48,22 @@ module.exports = {
         });
     },
     /* query database */
-    query: (name, response, obj) => {
-        var queryResult;
-        Client.connect(conn, function(err, db) {
-            if (err) throw err;
-            db.collection(name).find(obj).sort({date: -1}).toArray(function(err, result) {
+    query: (name, obj, res) => {
+        if(Object.keys(obj).length === 0 && obj.constructor === Object)
+        {
+            throw err;
+        }
+        else {
+            var queryResult;
+            Client.connect(conn, function(err, db) {
                 if (err) throw err;
-                response.json(result);
-                db.close();
-            })
-        });
+                db.collection(name).find(obj).sort({date: -1}).toArray(function(err, result) {
+                    if (err) throw err;
+                    res(result);
+                    db.close();
+                })
+            });
+        }
+        
     }
 }
