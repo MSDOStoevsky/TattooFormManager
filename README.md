@@ -43,7 +43,7 @@ Body:
     "zip": 49930,
     "phone_number": "9061234567",
     "email": "client@example.com",
-    "tat_descr": "Nice tat on left ass",
+    "tat_descr": "Nice tat on left cheek",
     "tat_compl": "none",
     "comp_haem": false,
     "comp_skin": false,
